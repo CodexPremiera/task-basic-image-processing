@@ -44,6 +44,12 @@ public class BasicDIP
     {
         basicCopy(image, newImage, 0, 0, image.Width, image.Height);
     }
+    public Bitmap basicCopy(Bitmap image)
+    {
+        Bitmap newImage = new Bitmap(image.Width, image.Height);
+        basicCopy(image, newImage, 0, 0, image.Width, image.Height);
+        return newImage;
+    }
 
 
     // GRAYSCALE
@@ -63,6 +69,12 @@ public class BasicDIP
     {
         grayscale(image, newImage, 0, 0, image.Width, image.Height);
     }
+    public Bitmap grayscale(Bitmap image)
+    {
+        Bitmap newImage = new Bitmap(image.Width, image.Height);
+        grayscale(image, newImage, 0, 0, image.Width, image.Height);
+        return newImage;
+    }
 
 
     // INVERSION
@@ -81,6 +93,13 @@ public class BasicDIP
     {
         invert(image, newImage, 0, 0, image.Width, image.Height);
     }
+    public Bitmap invert(Bitmap image)
+    {
+        Bitmap newImage = new Bitmap(image.Width, image.Height);
+        invert(image, newImage, 0, 0, image.Width, image.Height);
+        return newImage;
+    }
+
 
     // MIRROR X
     public void mirrorX(Bitmap image, Bitmap newImage, int originX, int originY, int endX, int endY)
@@ -94,6 +113,12 @@ public class BasicDIP
     public void mirrorX(Bitmap image, Bitmap newImage)
     {
         mirrorX(image, newImage, 0, 0, image.Width, image.Height);
+    }
+    public Bitmap mirrorX(Bitmap image)
+    {
+        Bitmap newImage = new Bitmap(image.Width, image.Height);
+        mirrorX(image, newImage, 0, 0, image.Width, image.Height);
+        return newImage;
     }
 
 
@@ -109,6 +134,12 @@ public class BasicDIP
     public void mirrorY(Bitmap image, Bitmap newImage)
     {
         mirrorY(image, newImage, 0, 0, image.Width, image.Height);
+    }
+    public Bitmap mirrorY(Bitmap image)
+    {
+        Bitmap newImage = new Bitmap(image.Width, image.Height);
+        mirrorY(image, newImage, 0, 0, image.Width, image.Height);
+        return newImage;
     }
 
 
@@ -138,6 +169,12 @@ public class BasicDIP
     public void sepia(Bitmap image, Bitmap newImage)
     {
         sepia(image, newImage, 0, 0, image.Width, image.Height);
+    }
+    public Bitmap sepia(Bitmap image)
+    {
+        Bitmap newImage = new Bitmap(image.Width, image.Height);
+        sepia(image, newImage, 0, 0, image.Width, image.Height);
+        return newImage;
     }
 
 
@@ -177,4 +214,46 @@ public class BasicDIP
         return hist;
     }
 
+
+    // SUBTRACT
+    public Bitmap subtract(Bitmap foreground, Bitmap background, Color foregroundColor)
+    {
+        // check if any image is null
+        if (foreground == null || background == null) 
+            return null;
+
+        Bitmap mergedImage = ResizeImage(foreground, background);
+
+        int aveForeColor = (foregroundColor.R + foregroundColor.G + foregroundColor.B) / 3;
+        int threshold = 10;
+
+        Bitmap subtracted = new Bitmap(mergedImage.Width, mergedImage.Height);
+
+        for (int x = 0; x < mergedImage.Width; x++)
+        {
+            for (int y = 0; y < mergedImage.Height; y++)
+            {
+                Color front = mergedImage.GetPixel(x, y);
+                Color back = background.GetPixel(x, y);
+                int aveFront = (front.R + front.G + front.B) / 3;
+
+                if (Math.Abs(aveFront - aveForeColor) <= threshold)
+                    subtracted.SetPixel(x, y, back);
+                else
+                    subtracted.SetPixel(x, y, front);
+            }
+        }
+
+        return subtracted;
+    }
+
+    private Bitmap ResizeImage(Bitmap a, Bitmap b)
+    {
+        Bitmap resizedImage = new Bitmap(b.Width, b.Height);
+        using (Graphics g = Graphics.FromImage(resizedImage))
+        {
+            g.DrawImage(a, 0, 0, b.Width, b.Height);
+        }
+        return resizedImage;
+    }
 }
